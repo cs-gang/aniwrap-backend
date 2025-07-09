@@ -1,23 +1,25 @@
 services:
   web:
     container_name: aniwrap
+    environment:
+      - ANIWRAP_DEBUG=true
     build:  
       context: .
       dockerfile: Dockerfile
     ports: 
       - "8000:8000"
     volumes:
-      - .aniwrap:/app/aniwrap
+      - ./aniwrap:/app/aniwrap
   
   postgres:
     container_name: postgres
     image: "postgres:17-alpine"
     environment:
-      - POSTGRES_USER=admin
+      - POSTGRES_USER=aniwrap
       - POSTGRES_PASSWORD=aniwrap
       - POSTGRES_DB=aniwrapdb
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d lnkshrtdb" ]
+      test: [ "CMD-SHELL", "pg_isready -U aniwrap -d aniwrapdb" ]
       interval: 2s
       timeout: 1s
       retries: 5
