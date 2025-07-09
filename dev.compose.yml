@@ -3,6 +3,7 @@ services:
     container_name: aniwrap
     environment:
       - ANIWRAP_DEBUG=true
+      - ANIWRAP_DATABASE_URL=postgresql+asyncpg://aniwrap:aniwrap@postgres:5432/aniwrapdb
     build:  
       context: .
       dockerfile: Dockerfile
