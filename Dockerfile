@@ -5,4 +5,4 @@ WORKDIR /app
 COPY . .
 RUN uv sync --frozen --no-cache
 
-CMD ["/app/.venv/bin/fastapi", "run", "aniwrap/app.py", "--port", "8000"] 
+CMD ["uv", "run", "fastapi", "run", "aniwrap/app.py", "--port", "8000"]
