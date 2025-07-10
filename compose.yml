@@ -1,0 +1,26 @@
+services:
+  web:
+    container_name: aniwrap-backend
+    image: "ghcr.io/cs-gang/aniwrap-backend:latest"
+    ports: 
+      - "8000:8000"
+  
+  postgres:
+    container_name: aniwrap-postgres
+    image: "postgres:17-alpine"
+    environment:
+      - POSTGRES_USER=aniwrap
+      - POSTGRES_PASSWORD=aniwrap
+      - POSTGRES_DB=aniwrapdb
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d lnkshrtdb" ]
+      interval: 2s
+      timeout: 1s
+      retries: 5
+    volumes:
+      - "postgres_data:/var/lib/postgresql/data"
+    ports:
+      - 5432:5432
+
+volumes:
+  postgres_data:
