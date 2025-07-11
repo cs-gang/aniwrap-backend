@@ -1,8 +1,19 @@
+from contextlib import asynccontextmanager
+
+import aiohttp
 from fastapi import FastAPI
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.http = aiohttp.ClientSession()
+    yield
+    await app.state.http.close()
+
 
 app = FastAPI()
 
 
-@app.get("/")
-def read_root():
-    return {"message": "Hello, World!"}
+@app.get("/ping")
+def ping():
+    return {"message": "pong!"}
