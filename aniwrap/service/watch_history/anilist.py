@@ -133,4 +133,10 @@ class AnilistWatchHistoryService:
             raw = await res.json()
             log.info("Fetched AniList watch history for user %s", variables["userName"])
 
-        return structure(raw["data"]["MediaListCollection"], MediaListCollection)
+        obj = structure(raw["data"]["MediaListCollection"], MediaListCollection)
+        if obj.hasNextChunk:
+            log.warning(
+                "API says there is more data left to be fetched for username %s, but we have stopped at one chunk",
+                username,
+            )
+        return obj
