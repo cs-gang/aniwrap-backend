@@ -1,0 +1,78 @@
+name: Ensure version increment
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check out base branch (main)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: 'main'
+
+      - name: Get version from main
+        id: main_version
+        shell: python
+        run: |
+          import tomllib
+          import os
+
+          # Read the file from the 'main' checkout path
+          with open('main/pyproject.toml', 'rb') as f:
+              data = tomllib.load(f)
+
+          version = data['project']['version']
+          print(f"Main branch version: {version}")
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              print(f"version={version}", file=f)
+
+      - name: Check out head branch (PR)
+        uses: actions/checkout@v4
+
+      - name: Get version from PR branch using Python
+        id: pr_version
+        shell: python
+        run: |
+          import tomllib
+          import os
+
+          with open('pyproject.toml', 'rb') as f:
+              data = tomllib.load(f)
+
+          version = data['project']['version']
+          print(f"PR branch version: {version}")
+
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              print(f"version={version}", file=f)
+
+      - name: Verify version increment
+        run: |
+          MAIN_VERSION="${{ steps.main_version.outputs.version }}"
+          PR_VERSION="${{ steps.pr_version.outputs.version }}"
+
+          if [ "$PR_VERSION" = "$MAIN_VERSION" ]; then
+            echo "Error: Version in pyproject.toml has not been incremented."
+            echo "The version on 'main' is $MAIN_VERSION. Please increment the version in your PR."
+            exit 1
+          fi
+
+          HIGHEST_VERSION=$(printf "%s\n%s" "$MAIN_VERSION" "$PR_VERSION" | sort -V | tail -n1)
+
+          if [ "$HIGHEST_VERSION" != "$PR_VERSION" ]; then
+            echo "Error: Version must be incremented. It cannot be downgraded or stay the same."
+            echo "The version on 'main' is $MAIN_VERSION, but this PR has $PR_VERSION."
+            exit 1
+          fi
+
+          echo "Success! Version correctly incremented from $MAIN_VERSION to $PR_VERSION."
