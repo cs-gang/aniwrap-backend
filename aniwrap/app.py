@@ -11,7 +11,7 @@ async def lifespan(app: FastAPI):
     await app.state.http.close()
 
 
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/ping")
