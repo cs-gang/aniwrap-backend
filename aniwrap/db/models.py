@@ -1,11 +1,12 @@
 """Database models."""
 
-import uuid
 import enum
+import uuid
 from datetime import datetime
 
-from sqlalchemy import String, text, DateTime
-from sqlalchemy.dialects.postgresql import UUID as dbUuid, ENUM as dbEnum
+from sqlalchemy import DateTime, String, text
+from sqlalchemy.dialects.postgresql import ENUM as dbEnum
+from sqlalchemy.dialects.postgresql import UUID as dbUuid
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,

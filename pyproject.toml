@@ -1,6 +1,6 @@
 [project]
 name = "aniwrap"
-version = "0.1.0"
+version = "0.2.0"
 description = "Backend server for AniWrap - cs-gang/AniWrap"
 readme = "README.md"
 authors = [
@@ -8,8 +8,11 @@ authors = [
 ]
 requires-python = ">=3.12"
 dependencies = [
+    "aiohttp>=3.12.14",
     "alembic>=1.16.2",
     "asyncpg>=0.30.0",
+    "attrs>=25.3.0",
+    "cattrs>=25.1.1",
     "fastapi[standard]>=0.115.13",
     "pydantic-settings>=2.10.1",
     "sqlalchemy>=2.0.41",

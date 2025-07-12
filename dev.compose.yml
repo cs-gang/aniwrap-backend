@@ -10,7 +10,10 @@ services:
     ports: 
       - "8000:8000"
     volumes:
-      - ./aniwrap:/app/aniwrap
+      - ./aniwrap:/app/aniwrap:ro
+    depends_on:
+      - postgres
+    
   
   postgres:
     container_name: postgres

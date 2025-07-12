@@ -1,5 +1,10 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from functools import cache
+from logging import getLogger
+
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+log = getLogger(__name__)
 
 
 class AnilistConfig(BaseModel):
@@ -14,3 +19,9 @@ class AniwrapConfig(BaseSettings):
 
     database_url: str
     anilist: AnilistConfig
+
+
+@cache
+def get_config() -> AniwrapConfig:
+    log.info("Fetching configuration settings")
+    return AniwrapConfig()  # type: ignore
