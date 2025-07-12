@@ -2,8 +2,15 @@ services:
   web:
     container_name: aniwrap-backend
     image: "ghcr.io/cs-gang/aniwrap-backend:latest"
+    environment:
+    - ANIWRAP_DEBUG=false
+    - ANIWRAP_DATABASE_URL=postgresql+asyncpg://aniwrap:aniwrap@postgres:5432/aniwrapdb
+    # Add remaining required environment variables here
+    # See .env.example for list of variables
     ports: 
       - "8000:8000"
+    depends_on:
+      - postgres
   
   postgres:
     container_name: aniwrap-postgres
