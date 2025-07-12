@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 import aiohttp
 from fastapi import FastAPI
 
+from aniwrap.api.watch_history import router as watch_history_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -12,6 +14,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(watch_history_router)
 
 
 @app.get("/ping")

@@ -8,7 +8,6 @@ from typing import Literal
 
 from attrs import define
 
-
 # These class names mostly mirror the names of entities
 # on the API
 # See: https://docs.anilist.co/reference/

@@ -1,7 +1,7 @@
 """Miscellaneous helper functions and stuff."""
 
-from fastapi import Request
 from aiohttp import ClientSession
+from fastapi import Request
 
 
 def get_http_client(request: Request) -> ClientSession:

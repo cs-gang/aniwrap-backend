@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import (
 
 from aniwrap.config import get_config
 
-
 DATABASE_URL = get_config().database_url
 
 

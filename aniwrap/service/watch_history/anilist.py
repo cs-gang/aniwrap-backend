@@ -1,17 +1,16 @@
 """Service to fetch a user's watch history from AniList."""
 
 from datetime import datetime
-from typing import Annotated
 from logging import getLogger
+from typing import Annotated
 
 from aiohttp import ClientSession
 from cattrs import structure
 from fastapi import Depends
 
-from aniwrap.config import get_config, AniwrapConfig
+from aniwrap.config import AniwrapConfig, get_config
 from aniwrap.misc import get_http_client
 from aniwrap.types.anilist.watch_history import MediaListCollection
-
 
 log = getLogger(__name__)
 
