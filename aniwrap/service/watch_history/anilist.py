@@ -66,6 +66,9 @@ ANILIST_MEDIALISTCOLLECTION_QUERY = """query ExampleQuery(
           seasonYear
           type
           siteUrl
+          title {
+            userPreferred
+          }
         }
       }
     }
