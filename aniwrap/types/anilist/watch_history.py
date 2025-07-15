@@ -56,7 +56,7 @@ class Media:
     bannerImage: str
     coverImage: _SizedCoverImage
     description: str
-    episodes: int
+    episodes: int | None
     genres: list[str]
     isAdult: bool
     isFavourite: bool
