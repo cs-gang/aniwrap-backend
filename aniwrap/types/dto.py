@@ -9,8 +9,10 @@ class AnimeData(BaseModel):
 
 
 class CalculatedStats(BaseModel):
+    n: int
     n_completed: int
     n_ongoing: int
     n_dropped: int
+    n_episodes: int
 
     anime: dict[str, AnimeData]
