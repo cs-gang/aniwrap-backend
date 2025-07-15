@@ -1,5 +1,6 @@
+from datetime import date
 from logging import getLogger
-from typing import Any
+from typing import Any, TypedDict
 
 import duckdb
 import polars as pl
@@ -11,16 +12,27 @@ from aniwrap.types.dto import CalculatedStats
 log = getLogger(__name__)
 
 
+DateDict = TypedDict("DateDict", {"year": int, "month": int, "day": int})
+
+
+def _to_date(d: DateDict) -> date | None:
+    if None in d.values():
+        return None
+    return date(**d)
+
+
 class StatisticsService:
     @staticmethod
     def _flatten_anilist_data(data: MediaListCollection) -> list[dict[str, Any]]:
         rows = []
 
-        # TODO: implement date parsing
         for watch_list in data.lists:
             base_row = {"list_name": watch_list.name, "status": watch_list.status}
             for entry in watch_list.entries:
                 entry_dict: dict = unstructure(entry)
+
+                entry_dict["startedAt"] = _to_date(entry_dict["startedAt"])
+                entry_dict["completedAt"] = _to_date(entry_dict["completedAt"])
 
                 media_dict = entry_dict.pop("media")
                 rows.append({**base_row, **entry_dict, **media_dict})
