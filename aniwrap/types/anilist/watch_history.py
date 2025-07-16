@@ -65,6 +65,7 @@ class Media:
     seasonYear: int
     siteUrl: str
     title: _Title
+    duration: int | None
     type: Literal["ANIME", "MANGA"]
 
 
