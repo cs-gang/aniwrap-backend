@@ -1,6 +1,10 @@
 from typing import Annotated, Literal
 
-from fastapi import APIRouter, Path
+from fastapi import APIRouter, Depends, Path
+
+from aniwrap.service.stats import StatisticsService
+from aniwrap.service.watch_history.anilist import AnilistWatchHistoryService
+from aniwrap.types.dto import CalculatedStats
 
 router = APIRouter(prefix="/wrapped")
 
@@ -14,4 +18,9 @@ async def get_wrapped(
     username: Annotated[
         str, Path(description="The user's username on the specified platform")
     ],
-): ...
+    watch_history_service: Annotated[AnilistWatchHistoryService, Depends()],
+    stats: Annotated[StatisticsService, Depends()],
+) -> CalculatedStats:
+    data = await watch_history_service.get_watch_history(username=username)
+    df = stats.make_dataframe_from_anilist(data)
+    return stats.calculate_stats(df)

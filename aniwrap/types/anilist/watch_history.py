@@ -16,6 +16,9 @@ from attrs import define
 # I don't care. I will not be bowing to the PEP-8 gods.
 
 
+type SeasonType = Literal["WINTER", "SPRING", "SUMMER", "FALL"]
+
+
 # TODO: need to recheck the types. which all are possibly null?
 @define
 class _SizedCoverImage:
@@ -43,19 +46,25 @@ class AdvancedScore:
 
 
 @define
+class _Title:
+    userPreferred: str
+
+
+@define
 class Media:
     averageScore: int
     bannerImage: str
     coverImage: _SizedCoverImage
     description: str
-    episodes: int
+    episodes: int | None
     genres: list[str]
     isAdult: bool
     isFavourite: bool
     meanScore: int
-    season: str  # TODO: enum!!
+    season: SeasonType
     seasonYear: int
     siteUrl: str
+    title: _Title
     type: Literal["ANIME", "MANGA"]
 
 
@@ -67,6 +76,8 @@ class MediaList:
     score: float
     startedAt: APIDate
     completedAt: APIDate
+    repeat: int
+    updatedAt: int  # TODO: is this a timestamp from epoch?
     status: str  # TODO: enum
     notes: str | None
     media: Media

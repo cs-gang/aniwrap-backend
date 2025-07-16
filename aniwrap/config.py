@@ -19,6 +19,7 @@ class AniwrapConfig(BaseSettings):
 
     database_url: str
     anilist: AnilistConfig
+    gemini_api_key: str
 
 
 @cache
