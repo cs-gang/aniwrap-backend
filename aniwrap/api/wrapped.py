@@ -19,8 +19,8 @@ async def get_wrapped(
         str, Path(description="The user's username on the specified platform")
     ],
     watch_history_service: Annotated[AnilistWatchHistoryService, Depends()],
-    ss: Annotated[StatisticsService, Depends()],
+    stats: Annotated[StatisticsService, Depends()],
 ) -> CalculatedStats:
     data = await watch_history_service.get_watch_history(username=username)
-    df = ss.make_dataframe_from_anilist(data)
-    return ss.calculate_stats(df)
+    df = stats.make_dataframe_from_anilist(data)
+    return stats.calculate_stats(df)
