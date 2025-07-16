@@ -7,7 +7,7 @@ import polars as pl
 from cattrs import unstructure
 
 from aniwrap.types.anilist.watch_history import MediaListCollection
-from aniwrap.types.dto import AnimeData, CalculatedStats, _GenreCounts, _MediaAndDate
+from aniwrap.types.dto import AnimeData, CalculatedStats, _GroupCounts, _MediaAndDate
 
 log = getLogger(__name__)
 
@@ -54,6 +54,8 @@ class StatisticsService:
         average_score = self._get_average_score(df)
 
         genre_counts = self._get_genre_counts(df)
+        decade_counts = self._get_decade_counts(df)
+        format_counts = self._get_format_counts(df)
 
         return CalculatedStats(
             n=n,
@@ -66,20 +68,48 @@ class StatisticsService:
             first_completed=first_completed,
             last_completed=last_completed,
             genre_counts=genre_counts,
+            decade_counts=decade_counts,
+            format_counts=format_counts,
             anime={obj["media_id"]: AnimeData.model_validate(obj) for obj in media},
         )
 
-    def _get_genre_counts(self, df: pl.DataFrame) -> list[_GenreCounts]:
+    def _get_genre_counts(self, df: pl.DataFrame) -> list[_GroupCounts]:
         res = (
             duckdb.sql(
-                "SELECT genre, COUNT(*) AS genre_count "
+                "SELECT genre, COUNT(*) AS count "
                 "FROM (SELECT UNNEST(genres) AS genre FROM df) "
-                "GROUP BY genre ORDER BY genre_count DESC"
+                "GROUP BY genre ORDER BY count DESC"
             )
             .pl()
             .to_dicts()
         )
-        return [_GenreCounts(**i) for i in res]
+        return [_GroupCounts(group=i["genre"], count=i["count"]) for i in res]
+
+    def _get_decade_counts(self, df: pl.DataFrame) -> list[_GroupCounts]:
+        res = (
+            duckdb.sql(
+                "SELECT ((seasonYear // 10) * 10)::VARCHAR AS decade, COUNT(*) AS count "
+                "FROM df "
+                "GROUP BY (seasonYear // 10) * 10 "
+                "ORDER BY decade"
+            )
+            .pl()
+            .to_dicts()
+        )
+        return [_GroupCounts(group=i["decade"], count=i["count"]) for i in res]
+
+    def _get_format_counts(self, df: pl.DataFrame) -> list[_GroupCounts]:
+        res = (
+            duckdb.sql(
+                "SELECT format, COUNT(*) AS count "
+                "FROM df "
+                "GROUP BY format "
+                "ORDER BY count"
+            )
+            .pl()
+            .to_dicts()
+        )
+        return [_GroupCounts(group=i["format"], count=i["count"]) for i in res]
 
     def _get_first_completed(self, df: pl.DataFrame) -> _MediaAndDate | None:
         first_completed_rel = duckdb.sql(

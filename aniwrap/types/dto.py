@@ -9,9 +9,11 @@ class _MediaAndDate(TypedDict):
     completed_at: date
 
 
-class _GenreCounts(TypedDict):
-    genre: str
-    genre_count: int
+class _GroupCounts(TypedDict):
+    # Used to denote counts for any arbitrary grouping -
+    # ex: genre, release year, release season etc
+    group: str
+    count: int
 
 
 class AnimeData(BaseModel):
@@ -43,6 +45,8 @@ class CalculatedStats(BaseModel):
     first_completed: _MediaAndDate | None
     last_completed: _MediaAndDate | None
 
-    genre_counts: list[_GenreCounts]
+    genre_counts: list[_GroupCounts]
+    decade_counts: list[_GroupCounts]
+    format_counts: list[_GroupCounts]
 
     anime: dict[int, AnimeData]

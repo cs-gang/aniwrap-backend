@@ -66,6 +66,7 @@ class Media:
     siteUrl: str
     title: _Title
     duration: int | None
+    format: str
     type: Literal["ANIME", "MANGA"]
 
 
