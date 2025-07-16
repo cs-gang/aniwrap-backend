@@ -7,7 +7,7 @@ import polars as pl
 from cattrs import unstructure
 
 from aniwrap.types.anilist.watch_history import MediaListCollection
-from aniwrap.types.dto import AnimeData, CalculatedStats, _MediaAndDate
+from aniwrap.types.dto import AnimeData, CalculatedStats, _GenreCounts, _MediaAndDate
 
 log = getLogger(__name__)
 
@@ -53,6 +53,8 @@ class StatisticsService:
         scores_valid = self._get_scores_validity(df)
         average_score = self._get_average_score(df)
 
+        genre_counts = self._get_genre_counts(df)
+
         return CalculatedStats(
             n=n,
             n_completed=n_completed,
@@ -63,8 +65,21 @@ class StatisticsService:
             scores_valid=scores_valid,
             first_completed=first_completed,
             last_completed=last_completed,
+            genre_counts=genre_counts,
             anime={obj["media_id"]: AnimeData.model_validate(obj) for obj in media},
         )
+
+    def _get_genre_counts(self, df: pl.DataFrame) -> list[_GenreCounts]:
+        res = (
+            duckdb.sql(
+                "SELECT genre, COUNT(*) AS genre_count "
+                "FROM (SELECT UNNEST(genres) AS genre FROM df) "
+                "GROUP BY genre ORDER BY genre_count DESC"
+            )
+            .pl()
+            .to_dicts()
+        )
+        return [_GenreCounts(**i) for i in res]
 
     def _get_first_completed(self, df: pl.DataFrame) -> _MediaAndDate | None:
         first_completed_rel = duckdb.sql(

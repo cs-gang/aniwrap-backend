@@ -9,6 +9,11 @@ class _MediaAndDate(TypedDict):
     completed_at: date
 
 
+class _GenreCounts(TypedDict):
+    genre: str
+    genre_count: int
+
+
 class AnimeData(BaseModel):
     media_id: int
     title: str
@@ -37,5 +42,7 @@ class CalculatedStats(BaseModel):
     scores_valid: bool
     first_completed: _MediaAndDate | None
     last_completed: _MediaAndDate | None
+
+    genre_counts: list[_GenreCounts]
 
     anime: dict[int, AnimeData]
