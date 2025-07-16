@@ -76,6 +76,8 @@ class MediaList:
     score: float
     startedAt: APIDate
     completedAt: APIDate
+    repeat: int
+    updatedAt: int  # TODO: is this a timestamp from epoch?
     status: str  # TODO: enum
     notes: str | None
     media: Media

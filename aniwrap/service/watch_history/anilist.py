@@ -50,6 +50,8 @@ ANILIST_MEDIALISTCOLLECTION_QUERY = """query ExampleQuery(
         }
         status
         notes
+        repeat
+        updatedAt
         media {
           averageScore
           bannerImage
