@@ -7,7 +7,13 @@ import polars as pl
 from cattrs import unstructure
 
 from aniwrap.types.anilist.watch_history import MediaListCollection
-from aniwrap.types.dto import AnimeData, CalculatedStats, _GroupCounts, _MediaAndDate
+from aniwrap.types.dto import (
+    AnimeData,
+    CalculatedStats,
+    _GroupCounts,
+    _MediaAndDate,
+    _SignatureGenre,
+)
 
 log = getLogger(__name__)
 
@@ -56,6 +62,7 @@ class StatisticsService:
         genre_counts = self._get_genre_counts(df)
         decade_counts = self._get_decade_counts(df)
         format_counts = self._get_format_counts(df)
+        signature_genre = self._get_favourite_genre(df)
 
         return CalculatedStats(
             n=n,
@@ -70,6 +77,7 @@ class StatisticsService:
             genre_counts=genre_counts,
             decade_counts=decade_counts,
             format_counts=format_counts,
+            signature_genre=signature_genre,
             anime={obj["media_id"]: AnimeData.model_validate(obj) for obj in media},
         )
 
@@ -111,6 +119,28 @@ class StatisticsService:
         )
         return [_GroupCounts(group=i["format"], count=i["count"]) for i in res]
 
+    def _get_favourite_genre(self, df: pl.DataFrame) -> _SignatureGenre | None:
+        res = duckdb.sql("""
+            WITH genre_stats AS (
+                SELECT genre, COUNT(*) AS anime_count, AVG(score) AS avg_score
+                FROM (SELECT UNNEST(genres) AS genre, score FROM df)
+                WHERE score != 0 AND score IS NOT NULL
+                GROUP BY genre
+            )
+            SELECT genre, anime_count, avg_score
+            FROM genre_stats
+            ORDER BY (anime_count * avg_score) DESC
+            LIMIT 1
+        """).fetchone()
+
+        if res:
+            return _SignatureGenre(name=res[0], anime_count=res[1], avg_score=res[2])
+        else:
+            log.warning(
+                "Favourite genre query did NOT return a result; defaulting to None"
+            )
+            return None
+
     def _get_first_completed(self, df: pl.DataFrame) -> _MediaAndDate | None:
         first_completed_rel = duckdb.sql(
             "SELECT mediaId::VARCHAR AS media_id, completedAt FROM df "
@@ -124,6 +154,11 @@ class StatisticsService:
                     "completed_at": first_completed_rel[1],
                 }
             )
+        else:
+            log.warning(
+                f"First completed query did NOT return a result: {first_completed_rel}; defaulting to None"
+            )
+            return None
 
     def _get_average_score(self, df: pl.DataFrame) -> float:
         res = duckdb.sql(
