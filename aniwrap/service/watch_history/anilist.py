@@ -68,6 +68,8 @@ ANILIST_MEDIALISTCOLLECTION_QUERY = """query ExampleQuery(
           seasonYear
           type
           siteUrl
+          duration
+          format
           title {
             userPreferred
           }

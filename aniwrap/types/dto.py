@@ -4,9 +4,24 @@ from typing import Literal, TypedDict
 from pydantic import BaseModel
 
 
+# TODO: make all the typeddicts here into BaseModels;
+# the typeddict doesn't get documented properly in swagger
+class _SignatureGenre(TypedDict):
+    name: str
+    anime_count: int
+    avg_score: float
+
+
 class _MediaAndDate(TypedDict):
     media_id: str
     completed_at: date
+
+
+class _GroupCounts(TypedDict):
+    # Used to denote counts for any arbitrary grouping -
+    # ex: genre, release year, release season etc
+    group: str
+    count: int
 
 
 class AnimeData(BaseModel):
@@ -37,5 +52,10 @@ class CalculatedStats(BaseModel):
     scores_valid: bool
     first_completed: _MediaAndDate | None
     last_completed: _MediaAndDate | None
+
+    genre_counts: list[_GroupCounts]
+    decade_counts: list[_GroupCounts]
+    format_counts: list[_GroupCounts]
+    signature_genre: _SignatureGenre | None
 
     anime: dict[int, AnimeData]

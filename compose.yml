@@ -7,6 +7,9 @@ services:
     - ANIWRAP_DATABASE_URL=postgresql+asyncpg://aniwrap:aniwrap@postgres:5432/aniwrapdb
     # Add remaining required environment variables here
     # See .env.example for list of variables
+    # Or, set all env vars in a .env file and then use the
+    # env_file key here intead of `environment`
+    # See: https://docs.docker.com/compose/how-tos/environment-variables/set-environment-variables/#use-the-env_file-attribute
     ports: 
       - "8000:8000"
     depends_on:
@@ -20,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=aniwrap
       - POSTGRES_DB=aniwrapdb
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U admin -d lnkshrtdb" ]
+      test: [ "CMD-SHELL", "pg_isready -U aniwrap -d aniwrapdb" ]
       interval: 2s
       timeout: 1s
       retries: 5

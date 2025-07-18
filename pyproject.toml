@@ -1,6 +1,6 @@
 [project]
 name = "aniwrap"
-version = "0.3.0"
+version = "0.4.0"
 description = "Backend server for AniWrap - cs-gang/AniWrap"
 readme = "README.md"
 authors = [
@@ -31,5 +31,7 @@ module-root = ""
 [dependency-groups]
 dev = [
     "pre-commit>=4.2.0",
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
     "ruff>=0.12.0",
 ]
