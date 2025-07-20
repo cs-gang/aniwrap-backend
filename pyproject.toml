@@ -1,6 +1,6 @@
 [project]
 name = "aniwrap"
-version = "0.4.0"
+version = "0.5.0"
 description = "Backend server for AniWrap - cs-gang/AniWrap"
 readme = "README.md"
 authors = [
